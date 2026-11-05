@@ -1,0 +1,30 @@
+{
+  "name": "@wis/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "create-platform-admin": "tsx --env-file-if-exists=../../.env --env-file-if-exists=../../.env.local scripts/create-platform-admin.ts"
+  },
+  "dependencies": {
+    "@better-auth/passkey": "^1.7.17",
+    "@wis/core": "workspace:*",
+    "@wis/db": "workspace:*",
+    "@wis/modules": "workspace:*",
+    "better-auth": "^1.7.17",
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.15"
+  }
+}

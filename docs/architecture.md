@@ -40,12 +40,13 @@ Rule: UI and public API both call the **same application services**. No business
 
 ### 4.1 Tenant onboarding & users
 
-1. Platform admin creates tenant (better-auth `organization`) and sets entitlements (`max_seats`, modules) → invites first customer admin (single-use, expiring invitation; 2FA/passkey enforced for admins).
+1. Platform admin creates tenant (better-auth `organization`; implemented as `provisionTenant`, see ADR-0004) and sets entitlements (`max_seats`, modules) → invites first customer admin (single-use, expiring invitation; 2FA/passkey enforced for admins).
 2. Customer admin logs in, creates/invites users within the seat limit.
 
 - **User ≠ Employee.** Employee = schedulable HR-style record (custom fields live here). User = login, optionally linked to an employee. Employees without login are supported (kiosk, imports).
 - **Seat limit** counts billable people per the tenant's billing config (see 4.3) + pending invitations. Enforced in the service layer inside a transaction that locks the tenant row (no race). Warnings at 80%/100%. Deactivation frees the seat, history is kept.
 - **Tenant lifecycle:** `trial → active → suspended → offboarding` (export, then deletion).
+- A user account can belong to several tenants (e.g. consultants); the active tenant is selected per session (tenant switcher). Seats are counted per tenant.
 - A tenant always keeps ≥ 1 admin; explicit ownership transfer.
 - Platform support impersonation: time-limited, reason required, audited, visible to tenant.
 

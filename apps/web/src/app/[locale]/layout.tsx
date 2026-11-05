@@ -4,7 +4,8 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { SerwistProvider } from '@serwist/turbopack/react';
 import { routing } from '@/i18n/routing';
-import './globals.css';
+import { display, sans } from '@/lib/fonts';
+import '../globals.css';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -12,14 +13,18 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'Home' });
-  return { title: t('title'), applicationName: 'WIS' };
+  const t = await getTranslations({ locale, namespace: 'Meta' });
+  return {
+    title: { default: t('title'), template: '%s · WIS' },
+    description: t('description'),
+    applicationName: 'WIS',
+  };
 }
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b1220' },
+    { media: '(prefers-color-scheme: light)', color: '#f2f4f7' },
+    { media: '(prefers-color-scheme: dark)', color: '#0d1320' },
   ],
 };
 
@@ -29,7 +34,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={`${display.variable} ${sans.variable}`}>
       <body>
         <SerwistProvider swUrl="/serwist/sw.js" disable={process.env.NODE_ENV === 'development'}>
           <NextIntlClientProvider>{children}</NextIntlClientProvider>

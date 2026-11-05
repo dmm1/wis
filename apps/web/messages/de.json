@@ -1,12 +1,306 @@
 {
-  "Home": {
+  "Meta": {
     "title": "WIS – Workforce, in sync",
-    "tagline": "Personal planen, koordinieren und vernetzen.",
-    "status": "Das Fundament steht."
+    "description": "Workforce-Management, das Ihr Team synchron hält."
   },
   "Pwa": {
     "name": "WIS – Workforce, in sync",
     "shortName": "WIS",
     "description": "Workforce-Management, das Ihr Team synchron hält."
+  },
+  "Roles": {
+    "customer-admin": "Kundenadmin",
+    "planner": "Planer:in",
+    "team-lead": "Teamleitung",
+    "hr-payroll": "Personal & Lohn",
+    "employee": "Mitarbeiter:in",
+    "auditor": "Prüfer:in",
+    "owner": "Inhaber:in",
+    "admin": "Admin",
+    "member": "Mitglied"
+  },
+  "Errors": {
+    "generic": "Etwas ist schiefgelaufen. Versuchen Sie es gleich noch einmal.",
+    "INVALID_EMAIL_OR_PASSWORD": "E-Mail-Adresse oder Passwort ist falsch.",
+    "INVALID_PASSWORD": "Das Passwort ist falsch.",
+    "PASSWORD_TOO_SHORT": "Verwenden Sie mindestens 12 Zeichen für Ihr Passwort.",
+    "PASSWORD_TOO_LONG": "Dieses Passwort ist zu lang.",
+    "EMAIL_NOT_VERIFIED": "Bestätigen Sie zuerst Ihre E-Mail-Adresse. Wir haben Ihnen einen Link geschickt.",
+    "INVALID_TOKEN": "Dieser Link ist ungültig oder abgelaufen. Fordern Sie einen neuen an.",
+    "INVALID_CODE": "Dieser Code stimmt nicht. Prüfen Sie Ihre Authenticator-App und versuchen Sie es erneut.",
+    "INVALID_BACKUP_CODE": "Dieser Backup-Code ist ungültig oder wurde schon verwendet.",
+    "TOO_MANY_ATTEMPTS": "Zu viele Versuche. Warten Sie eine Minute und versuchen Sie es erneut.",
+    "INVITATION_INVALID": "Diese Einladung ist nicht mehr gültig. Fordern Sie eine neue an.",
+    "ACCOUNT_EXISTS": "Zu dieser E-Mail-Adresse gibt es bereits ein Konto. Melden Sie sich stattdessen an.",
+    "SEAT_LIMIT_REACHED": "Alle Plätze sind belegt. Entfernen Sie eine Person oder fragen Sie Ihren WIS-Kontakt nach mehr Plätzen.",
+    "TENANT_NOT_ACTIVE": "Dieser Arbeitsbereich ist pausiert.",
+    "USER_ALREADY_HAS_PASSKEY": "Auf diesem Gerät gibt es bereits einen Passkey für Ihr Konto.",
+    "CHALLENGE_NOT_FOUND": "Die Passkey-Anfrage ist abgelaufen. Versuchen Sie es erneut."
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Anmelden",
+      "subtitle": "Melden Sie sich mit Ihrem Arbeitskonto an, um Ihre Dienste und Pläne zu sehen.",
+      "email": "E-Mail-Adresse",
+      "password": "Passwort",
+      "forgot": "Passwort vergessen?",
+      "submit": "Anmelden",
+      "or": "oder",
+      "passkey": "Mit Passkey anmelden",
+      "inviteOnly": "Konten entstehen über eine Einladung. Schauen Sie in Ihr Postfach nach einer E-Mail Ihres Arbeitgebers."
+    },
+    "twoFactor": {
+      "title": "Bestätigung in zwei Schritten",
+      "subtitle": "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.",
+      "backupSubtitle": "Geben Sie einen der Backup-Codes ein, die Sie bei der Einrichtung gespeichert haben.",
+      "codeLabel": "Code",
+      "backupLabel": "Backup-Code",
+      "trust": "Diesem Gerät 30 Tage vertrauen",
+      "submit": "Bestätigen",
+      "useBackup": "Backup-Code verwenden",
+      "useApp": "Authenticator-App verwenden",
+      "back": "Zurück zur Anmeldung"
+    },
+    "forgot": {
+      "title": "Passwort zurücksetzen",
+      "subtitle": "Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen Link, um ein neues Passwort zu wählen.",
+      "email": "E-Mail-Adresse",
+      "submit": "Link zum Zurücksetzen senden",
+      "sent": "Falls zu dieser Adresse ein Konto existiert, ist ein Link unterwegs. Er ist eine Stunde gültig.",
+      "back": "Zurück zur Anmeldung"
+    },
+    "reset": {
+      "title": "Neues Passwort wählen",
+      "password": "Neues Passwort",
+      "hint": "Mindestens 12 Zeichen. Mehrere zufällige Wörter funktionieren gut.",
+      "submit": "Passwort speichern",
+      "done": "Ihr Passwort wurde geändert.",
+      "toSignIn": "Anmelden",
+      "invalid": "Dieser Link zum Zurücksetzen ist ungültig oder abgelaufen.",
+      "requestNew": "Neuen Link anfordern"
+    },
+    "invite": {
+      "title": "{org} beitreten",
+      "subtitle": "Sie sind als {role} eingeladen.",
+      "email": "E-Mail-Adresse",
+      "name": "Ihr Name",
+      "password": "Passwort wählen",
+      "passwordHint": "Mindestens 12 Zeichen. Mehrere zufällige Wörter funktionieren gut.",
+      "createAndJoin": "Konto erstellen und beitreten",
+      "haveAccount": "Sie haben bereits ein WIS-Konto. Melden Sie sich an, um beizutreten.",
+      "signInToJoin": "Anmelden und beitreten",
+      "accept": "Arbeitsbereich beitreten",
+      "wrongAccount": "Diese Einladung gilt für {invited}, Sie sind aber als {current} angemeldet.",
+      "signOutAndContinue": "Abmelden und fortfahren",
+      "notFoundTitle": "Einladung nicht gefunden",
+      "notFound": "Wir konnten diese Einladung nicht finden. Prüfen Sie den Link in Ihrer E-Mail oder fordern Sie eine neue Einladung an.",
+      "expiredTitle": "Einladung abgelaufen",
+      "expired": "Diese Einladung ist abgelaufen. Bitten Sie eine:n Admin von {org}, Ihnen eine neue zu schicken.",
+      "usedTitle": "Einladung bereits verwendet",
+      "used": "Diese Einladung zu {org} wurde bereits angenommen oder zurückgezogen.",
+      "toSignIn": "Zur Anmeldung"
+    }
+  },
+  "Shell": {
+    "navLabel": "Hauptnavigation",
+    "nav": {
+      "home": "Start",
+      "security": "Sicherheit",
+      "platform": "Kunden"
+    },
+    "workspaces": "Arbeitsbereiche",
+    "switchWorkspace": "Arbeitsbereich wechseln",
+    "chooseWorkspace": "Arbeitsbereich wählen",
+    "chooseWorkspaceHint": "Sie gehören zu mehreren Arbeitsbereichen. Wählen Sie den, in dem Sie arbeiten möchten.",
+    "accountMenu": "Kontomenü",
+    "language": "Sprache",
+    "signOut": "Abmelden",
+    "twoFactorBanner": "Schützen Sie dieses Konto mit der Bestätigung in zwei Schritten.",
+    "twoFactorBannerAction": "Jetzt einrichten"
+  },
+  "Gate": {
+    "noWorkspaceTitle": "Sie sind noch in keinem Arbeitsbereich",
+    "noWorkspaceBody": "Bitten Sie Ihren Arbeitgeber um eine Einladung. Sobald Sie sie angenommen haben, erscheinen hier Ihre Pläne.",
+    "platformTitle": "Plattformverwaltung",
+    "platformBody": "Sie sind als Plattform-Admin angemeldet. Hier werden Arbeitsbereiche und Plätze verwaltet.",
+    "pausedTitle": "Dieser Arbeitsbereich ist pausiert",
+    "pausedBody": "{name} ist derzeit nicht verfügbar. Wenden Sie sich an Ihre Administration oder wechseln Sie den Arbeitsbereich."
+  },
+  "Home": {
+    "greeting": "Hallo, {name}",
+    "context": "Sie sind {role} in {workspace}.",
+    "modulesTitle": "Module",
+    "modulesEmpty": "Für diesen Arbeitsbereich sind noch keine Module aktiviert. Ihr WIS-Kontakt kann sie freischalten.",
+    "modules": {
+      "work-schedule": "Dienstplan"
+    },
+    "seatsTitle": "Plätze",
+    "seatsSummary": "{used} von {max} Plätzen belegt.",
+    "seatsReserved": "{reserved} durch offene Einladungen reserviert."
+  },
+  "Security": {
+    "title": "Sicherheit",
+    "subtitle": "Schützen Sie Ihr Konto. Passkeys sind der schnellste und sicherste Weg zur Anmeldung.",
+    "welcome": "Willkommen bei {workspace}. Richten Sie einen Passkey oder die Bestätigung in zwei Schritten ein, damit nur Sie sich anmelden können.",
+    "passkeys": {
+      "title": "Passkeys",
+      "description": "Melden Sie sich per Fingerabdruck, Gesicht oder Geräte-PIN an. Nichts zu tippen, nichts zu phishen.",
+      "empty": "Noch keine Passkeys.",
+      "nameLabel": "Name",
+      "namePlaceholder": "z. B. Diensthandy",
+      "defaultName": "Passkey",
+      "add": "Passkey hinzufügen",
+      "added": "Hinzugefügt am {date}",
+      "remove": "{name} entfernen"
+    },
+    "twoFactor": {
+      "title": "Bestätigung in zwei Schritten",
+      "description": "Verlangen Sie bei der Anmeldung mit Passwort zusätzlich einen Code aus einer Authenticator-App.",
+      "setup": "Bestätigung in zwei Schritten einrichten",
+      "on": "Aktiv",
+      "disable": "Ausschalten",
+      "confirmPassword": "Ihr Passwort",
+      "confirmPasswordHint": "Wir fragen danach, um sicherzugehen, dass Sie es sind.",
+      "continue": "Weiter",
+      "disableConfirm": "Bestätigung in zwei Schritten ausschalten",
+      "cancel": "Abbrechen",
+      "qrAlt": "QR-Code, um WIS ({email}) in Ihrer Authenticator-App hinzuzufügen",
+      "scanHelp": "Scannen Sie den QR-Code mit einer Authenticator-App wie Google Authenticator, 1Password oder Aegis. Geben Sie dann den 6-stelligen Code ein, den sie anzeigt.",
+      "manualKey": "Scannen geht nicht? Geben Sie diesen Schlüssel ein:",
+      "codeLabel": "6-stelliger Code",
+      "verify": "Bestätigen und aktivieren",
+      "enabled": "Die Bestätigung in zwei Schritten ist aktiv.",
+      "backupTitle": "Backup-Codes speichern",
+      "backupHelp": "Jeder Code funktioniert einmal, falls Sie den Zugriff auf Ihre Authenticator-App verlieren. Sie werden nicht noch einmal angezeigt.",
+      "copy": "Codes kopieren",
+      "copied": "Kopiert",
+      "savedThem": "Ich habe sie gespeichert"
+    },
+    "password": {
+      "title": "Passwort",
+      "description": "Wenn Sie Ihr Passwort ändern, werden Sie auf allen anderen Geräten abgemeldet.",
+      "current": "Aktuelles Passwort",
+      "new": "Neues Passwort",
+      "hint": "Mindestens 12 Zeichen.",
+      "submit": "Passwort ändern",
+      "done": "Passwort geändert. Andere Geräte wurden abgemeldet."
+    }
+  },
+  "work-schedule": {
+    "nav": {
+      "title": "Dienstplan"
+    },
+    "empty": {
+      "title": "Hier erscheinen Ihre Pläne",
+      "body": "Der Dienstplan ist für diesen Arbeitsbereich aktiviert. Planung, Veröffentlichung und Schichttausch folgen als Nächstes."
+    }
+  },
+  "Platform": {
+    "title": "Kunden",
+    "subtitle": "Jeder Kunde ist ein Arbeitsbereich mit eigenen Benutzern, Plätzen und Modulen.",
+    "newTenant": "Neuer Kunde",
+    "searchLabel": "Kunden suchen",
+    "searchPlaceholder": "Nach Namen suchen",
+    "statusLabel": "Status",
+    "allStatuses": "Alle Status",
+    "filter": "Anwenden",
+    "count": "{count, plural, =0 {Keine Kunden} one {# Kunde} other {# Kunden}}",
+    "emptyTitle": "Noch keine Kunden",
+    "emptyBody": "Legen Sie den ersten Kunden an. Die Administration erhält eine Einladung per E-Mail.",
+    "noMatchTitle": "Keine passenden Kunden",
+    "noMatchBody": "Versuchen Sie einen anderen Namen oder Status.",
+    "seats": "{used} von {max} Plätzen belegt, {reserved} reserviert",
+    "status": {
+      "trial": "Testphase",
+      "active": "Aktiv",
+      "suspended": "Gesperrt",
+      "offboarding": "Auslaufend"
+    },
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen. Versuchen Sie es gleich noch einmal.",
+      "FORBIDDEN": "Das dürfen nur Plattform-Admins.",
+      "VALIDATION": "Prüfen Sie das markierte Feld.",
+      "SLUG_TAKEN": "Dieser Kurzname ist schon vergeben. Wählen Sie einen anderen.",
+      "SEATS_BELOW_USAGE": "Das sind weniger Plätze, als belegt oder reserviert sind. Entfernen Sie zuerst Benutzer oder Einladungen.",
+      "UNKNOWN_MODULE": "Dieses Modul gibt es in dieser WIS-Version nicht.",
+      "INVITATION_NOT_PENDING": "Diese Einladung wurde bereits angenommen oder zurückgezogen.",
+      "INVALID_STATUS_TRANSITION": "Der Status kann so nicht geändert werden.",
+      "TENANT_NOT_PROVISIONED": "Dieser Kunde ist nicht korrekt eingerichtet.",
+      "SEAT_LIMIT_REACHED": "Alle Plätze sind belegt. Entfernen Sie eine Person oder fragen Sie Ihren WIS-Kontakt nach mehr Plätzen."
+    },
+    "new": {
+      "back": "Alle Kunden",
+      "title": "Neuer Kunde",
+      "subtitle": "Legt den Arbeitsbereich an und sendet der ersten Administration eine Einladung per E-Mail. Der Kunde startet mit 30 Tagen Testphase.",
+      "name": "Firmenname",
+      "slug": "Kurzname",
+      "slugHint": "Kleinbuchstaben, Ziffern und Bindestriche. Wird intern verwendet und lässt sich später nicht ändern.",
+      "adminEmail": "E-Mail der Administration",
+      "adminEmailHint": "Diese Person wird Kundenadmin und belegt einen Platz.",
+      "seats": "Plätze",
+      "mailLanguage": "Sprache der Einladung",
+      "modules": "Module",
+      "submit": "Kunde anlegen"
+    },
+    "detail": {
+      "back": "Alle Kunden",
+      "created": "angelegt am {date}",
+      "mailFailed": "Der Kunde wurde angelegt, aber die Einladung konnte nicht gesendet werden. Senden Sie sie unter Personen erneut.",
+      "statusTitle": "Status",
+      "statusActions": {
+        "none": "Weitere Statuswechsel sind nicht möglich.",
+        "confirmTitle": "Statuswechsel bestätigen",
+        "cancel": "Abbrechen",
+        "do": {
+          "trial": "Zurück zur Testphase",
+          "active": "Aktivieren",
+          "suspended": "Sperren",
+          "offboarding": "Auslaufen lassen"
+        },
+        "confirm": {
+          "suspended": "Die Mitglieder dieses Kunden verlieren sofort den Zugriff. Die Daten bleiben erhalten, Sie können jederzeit wieder aktivieren.",
+          "offboarding": "Die Mitglieder verlieren den Zugriff und niemand kann hinzugefügt werden. Das lässt sich nicht rückgängig machen."
+        }
+      },
+      "seats": {
+        "title": "Plätze",
+        "summary": "{used} von {max} Plätzen belegt, {reserved} durch offene Einladungen reserviert.",
+        "label": "Platzlimit",
+        "hint": "Darf nicht unter den {count} belegten oder reservierten Plätzen liegen.",
+        "save": "Plätze speichern",
+        "saved": "Platzlimit gespeichert."
+      },
+      "modules": {
+        "title": "Module",
+        "legend": "Aktivierte Module",
+        "hint": "Wenn Sie ein Modul ausschalten, ist es für diesen Kunden ausgeblendet. Die Daten bleiben erhalten.",
+        "save": "Module speichern",
+        "saved": "Module gespeichert."
+      },
+      "people": {
+        "title": "Personen",
+        "empty": "Noch niemand ist beigetreten.",
+        "pending": "Offene Einladungen",
+        "expires": "läuft ab am {date}",
+        "expired": "abgelaufen",
+        "resend": "Einladung erneut senden",
+        "resent": "Erneut gesendet."
+      },
+      "activity": {
+        "title": "Aktivität",
+        "empty": "Noch keine Aktivität."
+      }
+    },
+    "audit": {
+      "tenant_provisioned": "Kunde angelegt",
+      "tenant_status_changed": "Status von {from} auf {to} geändert",
+      "tenant_seats_changed": "Platzlimit von {fromSeats} auf {toSeats} geändert",
+      "tenant_modules_changed": "Module geändert. Hinzugefügt: {added}. Entfernt: {removed}.",
+      "invitation_created": "Einladung gesendet",
+      "invitation_accepted": "Einladung angenommen",
+      "invitation_resent": "Einladung erneut gesendet",
+      "member_removed": "Mitglied entfernt",
+      "member_role_changed": "Rolle eines Mitglieds geändert"
+    }
   }
 }

@@ -1,0 +1,122 @@
+@import 'tailwindcss';
+
+/*
+ * WIS design tokens.
+ * The four shift colours (early / day / late / night) are the only saturated colours in the
+ * product: they mean something in a schedule, so chrome stays neutral and ink-coloured.
+ */
+:root {
+  color-scheme: light dark;
+  --paper: #f2f4f7;
+  --surface: #ffffff;
+  --ink: #131c2b;
+  --on-ink: #ffffff;
+  --muted: #5a6678;
+  --line: #dde2ea;
+  --focus: #2f7fd1;
+  --danger: #b42343;
+  --danger-soft: #fdecef;
+  --success: #17784f;
+  --success-soft: #e6f6ee;
+  --early: #f0a32f;
+  --day: #2f7fd1;
+  --late: #d9546a;
+  --night: #3b3c9c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0d1320;
+    --surface: #151d2e;
+    --ink: #e8ecf3;
+    --on-ink: #0d1320;
+    --muted: #9aa6b8;
+    --line: #263146;
+    --focus: #6aa9f0;
+    --danger: #ff8fa3;
+    --danger-soft: #3a1822;
+    --success: #5fd3a1;
+    --success-soft: #12301f;
+    --early: #f5b654;
+    --day: #5b9fe6;
+    --late: #e8798d;
+    --night: #7c7de0;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-focus: var(--focus);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-early: var(--early);
+  --color-day: var(--day);
+  --color-late: var(--late);
+  --color-night: var(--night);
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-sans: var(--font-plex), system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--day) 30%, transparent);
+  }
+}
+
+/*
+ * Sync bars: shift blocks start out of phase and glide into alignment once on load.
+ * This is the only autonomous motion in the product.
+ */
+@keyframes sync-in {
+  from {
+    transform: translateX(var(--off, 0));
+    opacity: 0.35;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.sync-bar {
+  animation: sync-in 1.15s cubic-bezier(0.22, 0.8, 0.2, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sync-bar {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793913554358,
+      "tag": "0000_bootstrap_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793914677523,
+      "tag": "0001_auth_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793914689307,
+      "tag": "0002_auth_tables_deny_tenant_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793915587931,
+      "tag": "0003_tenancy_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793915608336,
+      "tag": "0004_user_locale",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793915636200,
+      "tag": "0005_tenancy_rls_triggers",
+      "breakpoints": true
+    }
+  ]
+}
