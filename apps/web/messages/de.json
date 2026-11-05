@@ -1,0 +1,12 @@
+{
+  "Home": {
+    "title": "WIS – Workforce, in sync",
+    "tagline": "Personal planen, koordinieren und vernetzen.",
+    "status": "Das Fundament steht."
+  },
+  "Pwa": {
+    "name": "WIS – Workforce, in sync",
+    "shortName": "WIS",
+    "description": "Workforce-Management, das Ihr Team synchron hält."
+  }
+}

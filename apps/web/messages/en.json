@@ -1,0 +1,12 @@
+{
+  "Home": {
+    "title": "WIS – Workforce, in sync",
+    "tagline": "Plan, coordinate and connect your workforce.",
+    "status": "Foundation is up and running."
+  },
+  "Pwa": {
+    "name": "WIS – Workforce, in sync",
+    "shortName": "WIS",
+    "description": "Workforce management that keeps your team in sync."
+  }
+}

@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+  - packages/modules/*
+  - packages/connectors/*
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+  esbuild: true
