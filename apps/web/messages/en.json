@@ -124,7 +124,10 @@
     "platformTitle": "Platform administration",
     "platformBody": "You're signed in as a platform admin. Workspaces and seats are managed here.",
     "pausedTitle": "This workspace is paused",
-    "pausedBody": "{name} is currently not available. Contact your administrator, or switch to another workspace."
+    "pausedBody": "{name} is currently not available. Contact your administrator, or switch to another workspace.",
+    "invitedTitle": "You've been invited",
+    "invitedBody": "Join your team's workspace to see your schedules.",
+    "join": "Join {name}"
   },
   "Home": {
     "greeting": "Hello, {name}",
@@ -135,7 +138,7 @@
       "work-schedule": "Work schedule"
     },
     "seatsTitle": "Seats",
-    "seatsSummary": "{used} of {max} seats in use.",
+    "seatsSummary": "{used} of {max, plural, one {# seat} other {# seats}} in use.",
     "seatsReserved": "{reserved} reserved by open invitations."
   },
   "Security": {
@@ -209,7 +212,7 @@
     "emptyBody": "Create the first customer. Its admin gets an invitation by email.",
     "noMatchTitle": "No customers match",
     "noMatchBody": "Try a different name or status.",
-    "seats": "{used} of {max} seats in use, {reserved} reserved",
+    "seats": "{used} of {max, plural, one {# seat} other {# seats}} in use, {reserved} reserved",
     "status": {
       "trial": "Trial",
       "active": "Active",
@@ -264,9 +267,9 @@
       },
       "seats": {
         "title": "Seats",
-        "summary": "{used} of {max} seats in use, {reserved} reserved by open invitations.",
+        "summary": "{used} of {max, plural, one {# seat} other {# seats}} in use, {reserved} reserved by open invitations.",
         "label": "Seat limit",
-        "hint": "Can't be lower than the {count} seats in use or reserved.",
+        "hint": "Can't be lower than the {count, plural, one {# seat} other {# seats}} in use or reserved.",
         "save": "Save seats",
         "saved": "Seat limit saved."
       },

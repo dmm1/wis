@@ -109,11 +109,16 @@ export async function createInvitedUser(
   return { userId: user.id };
 }
 
-/** Pending, unexpired invitations for an e-mail (used by the UI to nudge users to accept). */
+/** Pending, unexpired invitations for an e-mail, with the workspace name (shown when someone has no workspace yet). */
 export async function pendingInvitationsFor(db: Db, email: string) {
   return db
-    .select({ id: schema.invitation.id, organizationId: schema.invitation.organizationId })
+    .select({
+      id: schema.invitation.id,
+      organizationId: schema.invitation.organizationId,
+      organizationName: schema.organization.name,
+    })
     .from(schema.invitation)
+    .innerJoin(schema.organization, eq(schema.organization.id, schema.invitation.organizationId))
     .where(
       and(
         eq(schema.invitation.email, email.toLowerCase()),

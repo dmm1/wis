@@ -1,6 +1,7 @@
 import { PauseCircle, UserRoundX } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
+import { Link } from '@/i18n/navigation';
 import { BLOCKED_STATUSES } from '@wis/auth';
 import type { AppContext } from '@/lib/session';
 import { WorkspaceChooser } from './workspace-chooser';
@@ -20,6 +21,23 @@ export async function TenantGate({ ctx, children }: { ctx: AppContext; children:
       >
         {t('platformBody')}
       </Notice>
+    ) : ctx.pendingInvitations.length > 0 ? (
+      <section className="max-w-lg rounded-xl border border-line bg-surface p-6">
+        <h1 className="text-xl font-bold">{t('invitedTitle')}</h1>
+        <p className="mb-5 mt-2 text-muted">{t('invitedBody')}</p>
+        <ul className="space-y-2">
+          {ctx.pendingInvitations.map((i) => (
+            <li key={i.id}>
+              <Link
+                href={`/accept-invitation/${i.id}`}
+                className="flex h-12 items-center rounded-lg bg-ink px-4 font-medium text-on-ink hover:opacity-90"
+              >
+                {t('join', { name: i.name })}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
     ) : (
       <Notice
         icon={<UserRoundX className="size-5" aria-hidden="true" />}

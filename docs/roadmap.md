@@ -38,7 +38,9 @@ Step 4 – custom fields engine, with `employee` as the first extensible entity 
 - [x] Request-level enforcement: `TenantGate` / `assertTenantActive` block suspended and offboarding tenants (verified over HTTP)
 - [x] Invitation-only accounts (open sign-up disabled) + platform-admin bootstrap script (ADR-0006)
 - [x] Auth UI (en/de): sign-in, passkey, 2FA challenge, forgot/reset password, accept invitation, security settings (passkeys, 2FA setup with QR + backup codes, change password), app shell, workspace switcher/chooser, home with seat blocks
-- [ ] Browser-level verification (Playwright): needs system libraries in the dev container (`sudo npx playwright install-deps`); UI is verified by build + HTTP flow only so far
+- [x] Browser-level verification (Playwright, Chromium): invitations, sign-up, passkey (virtual authenticator), 2FA with real TOTP + backup codes, workspace and language switching, platform admin flows, mobile (no horizontal scroll) and dark mode; 31 checks, 0 console errors. Scripts are not in the repo yet.
+- [ ] Move the browser flows into the repo as a runnable e2e package (seed + Playwright + cleanup) and run them in CI
+- [ ] Remember the last-used workspace for people with several workspaces (today they pick after each sign-in; single-workspace users are activated automatically)
 - [ ] Enforce 2FA/passkey for customer-admins and platform admins (today: banner only)
 - [ ] Use a Resend sending-only API key (current key has full access)
 - [ ] Platform admin API/UI for provisioning, seats, status (step 3)
@@ -55,7 +57,6 @@ Step 4 – custom fields engine, with `employee` as the first extensible entity 
 - [x] Platform area (`/platform`): customer list + search/status filter, create customer, detail (status, seats, modules, people, resend invitation, activity), en/de
 - [x] Platform server actions verified: anonymous and customer-admin calls refused, validation and domain errors, audit entries
 - [x] i18n parity test (en/de keys and placeholders)
-- [ ] Browser-level UI verification (Playwright) — see step 2 follow-ups
 - [ ] Platform: edit billing config (preset, prices) per customer; usage overview (needs step 4)
 - [ ] Platform: sign-in / impersonation audit view; hard 2FA for platform admins
 

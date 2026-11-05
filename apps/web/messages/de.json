@@ -124,7 +124,10 @@
     "platformTitle": "Plattformverwaltung",
     "platformBody": "Sie sind als Plattform-Admin angemeldet. Hier werden Arbeitsbereiche und Plätze verwaltet.",
     "pausedTitle": "Dieser Arbeitsbereich ist pausiert",
-    "pausedBody": "{name} ist derzeit nicht verfügbar. Wenden Sie sich an Ihre Administration oder wechseln Sie den Arbeitsbereich."
+    "pausedBody": "{name} ist derzeit nicht verfügbar. Wenden Sie sich an Ihre Administration oder wechseln Sie den Arbeitsbereich.",
+    "invitedTitle": "Sie wurden eingeladen",
+    "invitedBody": "Treten Sie dem Arbeitsbereich Ihres Teams bei, um Ihre Pläne zu sehen.",
+    "join": "{name} beitreten"
   },
   "Home": {
     "greeting": "Hallo, {name}",
@@ -135,7 +138,7 @@
       "work-schedule": "Dienstplan"
     },
     "seatsTitle": "Plätze",
-    "seatsSummary": "{used} von {max} Plätzen belegt.",
+    "seatsSummary": "{used} von {max, plural, one {# Platz} other {# Plätzen}} belegt.",
     "seatsReserved": "{reserved} durch offene Einladungen reserviert."
   },
   "Security": {
@@ -209,7 +212,7 @@
     "emptyBody": "Legen Sie den ersten Kunden an. Die Administration erhält eine Einladung per E-Mail.",
     "noMatchTitle": "Keine passenden Kunden",
     "noMatchBody": "Versuchen Sie einen anderen Namen oder Status.",
-    "seats": "{used} von {max} Plätzen belegt, {reserved} reserviert",
+    "seats": "{used} von {max, plural, one {# Platz} other {# Plätzen}} belegt, {reserved} reserviert",
     "status": {
       "trial": "Testphase",
       "active": "Aktiv",
@@ -264,9 +267,9 @@
       },
       "seats": {
         "title": "Plätze",
-        "summary": "{used} von {max} Plätzen belegt, {reserved} durch offene Einladungen reserviert.",
+        "summary": "{used} von {max, plural, one {# Platz} other {# Plätzen}} belegt, {reserved} durch offene Einladungen reserviert.",
         "label": "Platzlimit",
-        "hint": "Darf nicht unter den {count} belegten oder reservierten Plätzen liegen.",
+        "hint": "Darf nicht unter {count, plural, one {dem # belegten oder reservierten Platz} other {den # belegten oder reservierten Plätzen}} liegen.",
         "save": "Plätze speichern",
         "saved": "Platzlimit gespeichert."
       },

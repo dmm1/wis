@@ -1,7 +1,7 @@
 import 'server-only';
 import { headers } from 'next/headers';
 import { cache } from 'react';
-import { getTenantOverview, type TenantOverview } from '@wis/auth';
+import { getTenantOverview, pendingInvitationsFor, type TenantOverview } from '@wis/auth';
 import { getAuthContext } from './auth';
 
 export const getSession = cache(async () => {
@@ -23,6 +23,8 @@ export interface AppContext {
   memberRole: string | null;
   tenant: TenantOverview | null;
   isPlatformAdmin: boolean;
+  /** Open invitations for this e-mail; only loaded while the user has no workspace. */
+  pendingInvitations: { id: string; name: string }[];
 }
 
 /** Everything the app shell needs, resolved once per request. Returns null when signed out. */
@@ -45,6 +47,14 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
     tenant = await getTenantOverview(db, activeId);
   }
 
+  const pendingInvitations =
+    workspaces.length === 0
+      ? (await pendingInvitationsFor(db, session.user.email)).map((i) => ({
+          id: i.id,
+          name: i.organizationName,
+        }))
+      : [];
+
   const u = session.user as typeof session.user & {
     role?: string | null;
     twoFactorEnabled?: boolean | null;
@@ -62,6 +72,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
     memberRole,
     tenant,
     isPlatformAdmin: (u.role ?? '').split(',').includes('admin'),
+    pendingInvitations,
   };
 });
 

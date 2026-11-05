@@ -30,5 +30,6 @@ WIS is used on phones between shifts (PWA) and at desks by planners and admins. 
 ## Consequences
 
 - Every new screen must ship in English and German, work at 400 px, have visible focus and keyboard access, and use tokens instead of hard-coded colours.
-- Passkey, 2FA and invitation flows are covered by integration tests (server) and HTTP smoke tests; browser-level tests (Playwright) still need system libraries on the dev container.
+- Passkey, 2FA and invitation flows are covered by integration tests (server) and by browser runs in Chromium (Playwright with a virtual WebAuthn authenticator and real TOTP codes). The browser scripts still need to move into the repo.
+- A person with exactly one workspace gets it activated at session creation and never sees a chooser; people with several choose after each sign-in. People with no workspace see their open invitations with a join link.
 - Admins are nudged (banner) to enable 2FA; hard enforcement is a follow-up.

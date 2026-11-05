@@ -4,8 +4,9 @@ import { APIError, createAuthMiddleware, getSessionFromCtx } from 'better-auth/a
 import { nextCookies } from 'better-auth/next-js';
 import { admin, organization, twoFactor } from 'better-auth/plugins';
 import { passkey } from '@better-auth/passkey';
+import { eq } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import type { schema } from '@wis/db';
+import { schema } from '@wis/db';
 import { writeAudit } from './audit';
 import { TenantError } from './errors';
 import { assertNotLastAdmin, assertSeatAvailable } from './guards';
@@ -108,6 +109,25 @@ export function createAuth(options: AuthOptions) {
     session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
     advanced: { useSecureCookies: production },
     rateLimit: { enabled: true, storage: 'database' },
+
+    databaseHooks: {
+      session: {
+        create: {
+          // Someone who belongs to exactly one workspace never has to choose: it is active from the
+          // first request of every session. People with several workspaces pick one explicitly.
+          before: async (session) => {
+            const memberships = await db
+              .select({ organizationId: schema.member.organizationId })
+              .from(schema.member)
+              .where(eq(schema.member.userId, session.userId))
+              .limit(2);
+            if (memberships.length === 1) {
+              return { data: { ...session, activeOrganizationId: memberships[0]!.organizationId } };
+            }
+          },
+        },
+      },
+    },
 
     hooks: {
       // Audit trail for tenant administration and platform actions (only successful calls).

@@ -93,13 +93,15 @@ export default async function PlatformPage({
             <li key={tn.id}>
               <Link
                 href={`/platform/${tn.id}`}
-                className="grid gap-4 rounded-xl border border-line bg-surface p-4 transition-colors hover:border-muted/60 md:grid-cols-[minmax(0,1.4fr)_auto_minmax(0,1fr)] md:items-center md:p-5"
+                className="grid gap-4 rounded-xl border border-line bg-surface p-4 transition-colors hover:border-muted/60 md:grid-cols-[minmax(0,1.4fr)_7.5rem_minmax(0,1fr)] md:items-center md:p-5"
               >
                 <div className="min-w-0">
                   <p className="truncate text-lg font-semibold">{tn.name}</p>
                   <p className="truncate text-sm text-muted">{tn.slug}</p>
                 </div>
-                <StatusPill status={tn.status} />
+                <div className="justify-self-start">
+                  <StatusPill status={tn.status} />
+                </div>
                 <div className="min-w-0">
                   <p className="mb-2 text-sm tabular-nums text-muted">
                     {t('seats', {

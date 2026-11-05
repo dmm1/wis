@@ -11,6 +11,7 @@ import {
   createPlatformAdmin,
   getInvitationPreview,
   getTenantOverview,
+  pendingInvitationsFor,
   provisionTenant,
   setTenantStatus,
   TenantErrorCode,
@@ -177,6 +178,63 @@ describe.skipIf(!url)('invitation sign-up + tenant gate (integration)', () => {
       await tx.execute(sql`SELECT set_config('wis.audit_purge', 'on', true)`);
       await tx.delete(schema.auditLog).where(eq(schema.auditLog.targetId, userId));
     });
+  });
+
+  it('lists open invitations for an e-mail with the workspace name', async () => {
+    const r = await provision();
+    const open = await pendingInvitationsFor(db, r.adminEmail.toUpperCase());
+    expect(open).toHaveLength(1);
+    expect(open[0]).toMatchObject({ id: r.invitationId, organizationId: r.tenantId });
+    expect(open[0]?.organizationName).toMatch(/^Inv /);
+    expect(await pendingInvitationsFor(db, 'nobody@wis.test')).toEqual([]);
+  });
+
+  it('activates the only workspace on sign-in, but lets people with several choose', async () => {
+    const a = await provision();
+    const { userId } = await createInvitedUser(
+      { auth, db },
+      { invitationId: a.invitationId, name: 'Solo', password: PASSWORD, locale: 'en' },
+    );
+    const signIn = async () => {
+      const { headers } = await auth.api.signInEmail({
+        body: { email: a.adminEmail, password: PASSWORD },
+        returnHeaders: true,
+      });
+      return new Headers({
+        cookie: headers
+          .getSetCookie()
+          .map((c) => c.split(';')[0])
+          .join('; '),
+      });
+    };
+    const active = async (h: Headers) =>
+      (await auth.api.getSession({ headers: h }))?.session.activeOrganizationId ?? null;
+
+    await auth.api.acceptInvitation({
+      headers: await signIn(),
+      body: { invitationId: a.invitationId },
+    });
+    expect(await active(await signIn())).toBe(a.tenantId); // one workspace: active from the start
+
+    // a second workspace for the same person
+    const b = await provisionTenant(
+      { db, mailer, baseURL },
+      {
+        name: 'Second',
+        slug: `inv-second-${run}`,
+        adminEmail: a.adminEmail,
+        maxSeats: 3,
+        actorUserId: platformId,
+      },
+    );
+    tenants.push(b.tenantId);
+    invitationIds.push(b.invitationId);
+    await auth.api.acceptInvitation({
+      headers: await signIn(),
+      body: { invitationId: b.invitationId },
+    });
+    expect(await active(await signIn())).toBeNull(); // several: the person chooses
+    expect(userId).toBeTruthy();
   });
 
   it('reports expired and unknown invitations', async () => {

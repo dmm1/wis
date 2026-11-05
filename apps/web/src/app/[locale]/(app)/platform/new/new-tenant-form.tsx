@@ -11,6 +11,9 @@ import { createTenantAction } from '../actions';
 const slugify = (s: string) =>
   s
     .toLowerCase()
+    .replace(/ß/g, 'ss')
+    .replace(/æ/g, 'ae')
+    .replace(/ø/g, 'o')
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
