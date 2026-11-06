@@ -1,12 +1,13 @@
-import { and, count, desc, eq, gt, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { z } from 'zod';
 import { registry } from '@wis/modules';
 import { schema } from '@wis/db';
-import { writeAudit } from './audit';
+import { writeAudit } from '@wis/db';
 import { TenantError, TenantErrorCode } from './errors';
 import type { Mailer } from './mailer';
 import { invitationEmail, toMailLocale } from './templates';
+import { getBillingUsage } from './usage';
 import type { PlatformDeps } from './platform';
 
 type Db = NodePgDatabase<typeof schema>;
@@ -67,26 +68,9 @@ export async function listTenants(db: Db, raw: z.input<typeof listQuery> = {}) {
     .where(where);
 
   const ids = rows.map((r) => r.id);
-  const members = ids.length
-    ? await db
-        .select({ id: schema.member.organizationId, n: count() })
-        .from(schema.member)
-        .where(inArray(schema.member.organizationId, ids))
-        .groupBy(schema.member.organizationId)
-    : [];
-  const pending = ids.length
-    ? await db
-        .select({ id: schema.invitation.organizationId, n: count() })
-        .from(schema.invitation)
-        .where(
-          and(
-            inArray(schema.invitation.organizationId, ids),
-            eq(schema.invitation.status, 'pending'),
-            gt(schema.invitation.expiresAt, new Date()),
-          ),
-        )
-        .groupBy(schema.invitation.organizationId)
-    : [];
+  const usage = new Map(
+    await Promise.all(ids.map(async (id) => [id, await getBillingUsage(db, id)] as const)),
+  );
   const mods = ids.length
     ? await db
         .select()
@@ -96,8 +80,8 @@ export async function listTenants(db: Db, raw: z.input<typeof listQuery> = {}) {
 
   const items: TenantListItem[] = rows.map((r) => ({
     ...r,
-    seatsUsed: members.find((m) => m.id === r.id)?.n ?? 0,
-    seatsReserved: pending.find((m) => m.id === r.id)?.n ?? 0,
+    seatsUsed: usage.get(r.id)?.inUse ?? 0,
+    seatsReserved: usage.get(r.id)?.reserved ?? 0,
     modules: mods.filter((m) => m.tenantId === r.id).map((m) => m.moduleId),
   }));
   return { items, total };
@@ -158,13 +142,15 @@ export async function getTenantDetail(db: Db, tenantId: string) {
     .limit(20);
 
   const now = new Date();
+  const usage = await getBillingUsage(db, tenantId);
   return {
     ...base,
     modules,
     members,
     invitations: invitations.map((i) => ({ ...i, expired: i.expiresAt <= now })),
-    seatsUsed: members.length,
-    seatsReserved: invitations.filter((i) => i.expiresAt > now).length,
+    seatsUsed: usage.inUse,
+    seatsReserved: usage.reserved,
+    usage,
     activity,
   };
 }
@@ -204,22 +190,8 @@ export async function updateTenantEntitlements(
     if (!ent) throw new TenantError(TenantErrorCode.TENANT_NOT_PROVISIONED);
 
     if (input.maxSeats !== undefined && input.maxSeats !== ent.maxSeats) {
-      const [{ n: members } = { n: 0 }] = await tx
-        .select({ n: count() })
-        .from(schema.member)
-        .where(eq(schema.member.organizationId, input.tenantId));
-      const [{ n: pending } = { n: 0 }] = await tx
-        .select({ n: count() })
-        .from(schema.invitation)
-        .where(
-          and(
-            eq(schema.invitation.organizationId, input.tenantId),
-            eq(schema.invitation.status, 'pending'),
-            gt(schema.invitation.expiresAt, new Date()),
-          ),
-        );
-      if (input.maxSeats < members + pending)
-        throw new TenantError(TenantErrorCode.SEATS_BELOW_USAGE);
+      const { billable } = await getBillingUsage(tx as unknown as Db, input.tenantId);
+      if (input.maxSeats < billable) throw new TenantError(TenantErrorCode.SEATS_BELOW_USAGE);
       await tx
         .update(schema.tenantEntitlements)
         .set({ maxSeats: input.maxSeats, updatedAt: new Date() })

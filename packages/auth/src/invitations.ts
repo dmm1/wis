@@ -1,7 +1,7 @@
 import { and, eq, gt } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { schema } from '@wis/db';
-import { writeAudit } from './audit';
+import { writeAudit } from '@wis/db';
 import type { Auth } from './auth';
 
 type Db = NodePgDatabase<typeof schema>;

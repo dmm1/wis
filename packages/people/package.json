@@ -1,0 +1,28 @@
+{
+  "name": "@wis/people",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@wis/core": "workspace:*",
+    "@wis/db": "workspace:*",
+    "@wis/modules": "workspace:*",
+    "drizzle-orm": "^0.45.4",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "@wis/auth": "workspace:*",
+    "pg": "^8.23.1",
+    "vitest": "^5.1.0"
+  }
+}

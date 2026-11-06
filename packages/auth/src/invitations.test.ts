@@ -233,7 +233,19 @@ describe.skipIf(!url)('invitation sign-up + tenant gate (integration)', () => {
       headers: await signIn(),
       body: { invitationId: b.invitationId },
     });
-    expect(await active(await signIn())).toBeNull(); // several: the person chooses
+    expect(await active(await signIn())).toBeNull(); // several and none used yet: the person chooses
+
+    // choosing is remembered for the next sign-in
+    await auth.api.setActiveOrganization({
+      headers: await signIn(),
+      body: { organizationId: b.tenantId },
+    });
+    expect(await active(await signIn())).toBe(b.tenantId);
+    await auth.api.setActiveOrganization({
+      headers: await signIn(),
+      body: { organizationId: a.tenantId },
+    });
+    expect(await active(await signIn())).toBe(a.tenantId);
     expect(userId).toBeTruthy();
   });
 

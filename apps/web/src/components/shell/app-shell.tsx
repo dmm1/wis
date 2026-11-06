@@ -5,6 +5,7 @@ import { Logo, LogoMark } from '@/components/brand/logo';
 import { Alert } from '@/components/ui/alert';
 import { Link } from '@/i18n/navigation';
 import { BLOCKED_STATUSES } from '@wis/auth';
+import { getRequestActor } from '@/lib/actor';
 import type { AppContext } from '@/lib/session';
 import { NavLinks, type NavEntry } from './nav-links';
 import { TenantSwitcher } from './tenant-switcher';
@@ -73,6 +74,9 @@ async function buildNavigation(
 ): Promise<NavEntry[]> {
   const items: NavEntry[] = [{ href: '/', label: tn('home'), icon: 'home' }];
   if (ctx.tenant && !BLOCKED_STATUSES.includes(ctx.tenant.status)) {
+    const ra = await getRequestActor();
+    if (ra?.actor.can('employee', 'read'))
+      items.push({ href: '/employees', label: tn('employees'), icon: 'users' });
     for (const entry of registry.navigationFor(ctx.tenant.modules)) {
       const tm = await getTranslations(entry.moduleId);
       items.push({ href: entry.path, label: tm(entry.labelKey as never), icon: entry.icon });
@@ -80,6 +84,12 @@ async function buildNavigation(
   }
   if (ctx.isPlatformAdmin)
     items.push({ href: '/platform', label: tn('platform'), icon: 'building-2' });
+  if (ctx.tenant && !BLOCKED_STATUSES.includes(ctx.tenant.status)) {
+    const ra = await getRequestActor();
+    if (ra?.actor.can('organization', 'update')) {
+      items.push({ href: '/settings/fields', label: tn('fields'), icon: 'sliders-horizontal' });
+    }
+  }
   items.push({ href: '/settings/security', label: tn('security'), icon: 'shield-check' });
   return items;
 }

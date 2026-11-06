@@ -33,6 +33,10 @@ Without `RESEND_API_KEY`, e-mails (invitations, verification, reset) are printed
 
 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build`
 
+## Browser tests
+
+`pnpm build && pnpm --filter @wis/e2e e2e` drives the built app in Chromium (see [packages/e2e/README.md](../packages/e2e/README.md)). It only runs against a database without real users and removes its own test data.
+
 ## PWA
 
 The service worker is disabled in `next dev`. Test with `pnpm build && pnpm --filter @wis/web start`.

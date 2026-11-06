@@ -9,6 +9,9 @@ export const TenantErrorCode = {
   UNKNOWN_MODULE: 'UNKNOWN_MODULE',
   SEATS_BELOW_USAGE: 'SEATS_BELOW_USAGE',
   INVITATION_NOT_PENDING: 'INVITATION_NOT_PENDING',
+  EMPLOYEE_NOT_FOUND: 'EMPLOYEE_NOT_FOUND',
+  NOT_A_MEMBER: 'NOT_A_MEMBER',
+  ALREADY_LINKED: 'ALREADY_LINKED',
 } as const;
 export type TenantErrorCode = (typeof TenantErrorCode)[keyof typeof TenantErrorCode];
 

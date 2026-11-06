@@ -1,3 +1,4 @@
+import { CORE_EXTENSIBLE_ENTITIES } from './custom-fields';
 import type { ModuleManifest } from './module';
 
 export interface NavigationItem {
@@ -45,6 +46,14 @@ export class ModuleRegistry {
 
   ids(): string[] {
     return [...this.byId.keys()];
+  }
+
+  /** Entities that accept custom fields: core ones (`employee`) and module ones (`<module>.<entity>`). */
+  extensibleEntityIds(): string[] {
+    return [
+      ...CORE_EXTENSIBLE_ENTITIES,
+      ...this.list().flatMap((m) => m.extensibleEntities.map((e) => `${m.id}.${e}`)),
+    ];
   }
 
   /** Permission statements for access control: resource = module id, actions = permission suffixes. */

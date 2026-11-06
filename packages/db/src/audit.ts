@@ -1,5 +1,5 @@
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { schema } from '@wis/db';
+import * as schema from './schema';
 
 type Db = NodePgDatabase<typeof schema>;
 type Executor = Pick<Db, 'insert'>;

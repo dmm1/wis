@@ -7,7 +7,7 @@ import { passkey } from '@better-auth/passkey';
 import { eq } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { schema } from '@wis/db';
-import { writeAudit } from './audit';
+import { writeAudit } from '@wis/db';
 import { TenantError } from './errors';
 import { assertNotLastAdmin, assertSeatAvailable } from './guards';
 import { consoleMailer, type Mailer } from './mailer';
@@ -104,6 +104,8 @@ export function createAuth(options: AuthOptions) {
       additionalFields: {
         // UI + e-mail language. Constrained to en|de by a DB check constraint.
         locale: { type: 'string', required: false, defaultValue: 'en', input: true },
+        // Remembered so people with several workspaces land in the one they used last. Server-managed.
+        lastWorkspaceId: { type: 'string', required: false, input: false },
       },
     },
     session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
@@ -113,17 +115,23 @@ export function createAuth(options: AuthOptions) {
     databaseHooks: {
       session: {
         create: {
-          // Someone who belongs to exactly one workspace never has to choose: it is active from the
-          // first request of every session. People with several workspaces pick one explicitly.
+          // A workspace is active from the first request of every session when the choice is obvious:
+          // the only one, or (with several) the one used last, if the person still belongs to it.
           before: async (session) => {
             const memberships = await db
               .select({ organizationId: schema.member.organizationId })
               .from(schema.member)
-              .where(eq(schema.member.userId, session.userId))
-              .limit(2);
-            if (memberships.length === 1) {
-              return { data: { ...session, activeOrganizationId: memberships[0]!.organizationId } };
+              .where(eq(schema.member.userId, session.userId));
+            let chosen: string | undefined;
+            if (memberships.length === 1) chosen = memberships[0]!.organizationId;
+            else if (memberships.length > 1) {
+              const [u] = await db
+                .select({ last: schema.user.lastWorkspaceId })
+                .from(schema.user)
+                .where(eq(schema.user.id, session.userId));
+              chosen = memberships.find((m) => m.organizationId === u?.last)?.organizationId;
             }
+            if (chosen) return { data: { ...session, activeOrganizationId: chosen } };
           },
         },
       },
@@ -149,6 +157,14 @@ export function createAuth(options: AuthOptions) {
             targetId: str(body.userId),
             metadata: body.role ? { role: body.role } : {},
           });
+          return;
+        }
+
+        if (path === '/organization/set-active' && actorId && str(body.organizationId)) {
+          await db
+            .update(schema.user)
+            .set({ lastWorkspaceId: str(body.organizationId) })
+            .where(eq(schema.user.id, actorId));
           return;
         }
 

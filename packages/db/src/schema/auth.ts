@@ -18,6 +18,7 @@ export const user = pgTable('user', {
   banExpires: timestamp('ban_expires'),
   twoFactorEnabled: boolean('two_factor_enabled').default(false),
   locale: text('locale').default('en'),
+  lastWorkspaceId: text('last_workspace_id'),
 });
 
 export const session = pgTable(

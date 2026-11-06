@@ -1,6 +1,14 @@
 'use client';
 
-import { Building2, CalendarDays, Home, ShieldCheck, type LucideIcon } from 'lucide-react';
+import {
+  Building2,
+  CalendarDays,
+  Home,
+  ShieldCheck,
+  SlidersHorizontal,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 
@@ -16,6 +24,8 @@ const ICONS: Record<string, LucideIcon> = {
   'shield-check': ShieldCheck,
   'calendar-days': CalendarDays,
   'building-2': Building2,
+  users: Users,
+  'sliders-horizontal': SlidersHorizontal,
 };
 
 export function NavLinks({ items, variant }: { items: NavEntry[]; variant: 'rail' | 'tabs' }) {

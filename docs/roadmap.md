@@ -1,12 +1,12 @@
 # Roadmap & progress
 
-Single place to see where WIS stands. **Updated in the same change as the work** (see AGENTS.md). Last updated: 2026-11-05 (steps 1–3 done).
+Single place to see where WIS stands. **Updated in the same change as the work** (see AGENTS.md). Last updated: 2026-11-05 (steps 1–4 done).
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 
 ## Now
 
-Step 4 – custom fields engine, with `employee` as the first extensible entity (see [architecture §6](architecture.md)).
+Step 5 – public API v1: API keys / OAuth2 client credentials, OpenAPI, webhooks via outbox, `external_refs` (see [architecture §7](architecture.md)).
 
 ## Foundation
 
@@ -38,14 +38,15 @@ Step 4 – custom fields engine, with `employee` as the first extensible entity 
 - [x] Request-level enforcement: `TenantGate` / `assertTenantActive` block suspended and offboarding tenants (verified over HTTP)
 - [x] Invitation-only accounts (open sign-up disabled) + platform-admin bootstrap script (ADR-0006)
 - [x] Auth UI (en/de): sign-in, passkey, 2FA challenge, forgot/reset password, accept invitation, security settings (passkeys, 2FA setup with QR + backup codes, change password), app shell, workspace switcher/chooser, home with seat blocks
-- [x] Browser-level verification (Playwright, Chromium): invitations, sign-up, passkey (virtual authenticator), 2FA with real TOTP + backup codes, workspace and language switching, platform admin flows, mobile (no horizontal scroll) and dark mode; 31 checks, 0 console errors. Scripts are not in the repo yet.
-- [ ] Move the browser flows into the repo as a runnable e2e package (seed + Playwright + cleanup) and run them in CI
-- [ ] Remember the last-used workspace for people with several workspaces (today they pick after each sign-in; single-workspace users are activated automatically)
+- [x] Browser-level verification (Playwright, Chromium): invitations, sign-up, passkey (virtual authenticator), 2FA with real TOTP + backup codes, workspace and language switching, platform admin flows, mobile (no horizontal scroll) and dark mode; 32 checks, 0 console errors.
+- [x] Browser flows live in the repo as `@wis/e2e` (guarded seed, Playwright, cleanup); run with `pnpm --filter @wis/e2e e2e`
+- [x] Last-used workspace is remembered (single-workspace users are activated automatically)
+- [ ] Run `@wis/e2e` in CI (needs a Neon branch per run, secrets, Chromium)
 - [ ] Enforce 2FA/passkey for customer-admins and platform admins (today: banner only)
 - [ ] Use a Resend sending-only API key (current key has full access)
 - [ ] Platform admin API/UI for provisioning, seats, status (step 3)
 - [ ] Location scope for role assignments (when locations exist in work-schedule); role-management UI
-- [ ] Usage snapshots + billing category counts (needs employees → step 4); update `enforce_seat_limit()` then
+- [x] Billing category counts and `enforce_seat_limit()` over billable people (step 4)
 - [ ] Resend account: verify sending domain (EU region), set `RESEND_API_KEY` / `MAIL_FROM` (manual)
 - [ ] Retention/purge job for audit log (GDPR)
 
@@ -60,11 +61,19 @@ Step 4 – custom fields engine, with `employee` as the first extensible entity 
 - [ ] Platform: edit billing config (preset, prices) per customer; usage overview (needs step 4)
 - [ ] Platform: sign-in / impersonation audit view; hard 2FA for platform admins
 
-### 4. Custom fields engine
+### 4. Custom fields engine — done
 
-- [ ] `field_definitions`, `form_layouts`, `custom_data jsonb`
-- [ ] Zod generated from definitions; indexes for filtered fields
-- [ ] Employee as first extensible entity
+- [x] `field_definition` (per tenant and entity), `employee.custom_data jsonb` + GIN index, RLS (ADR-0008)
+- [x] Strict Zod validation generated from definitions; sensitive fields; archived values preserved; translatable issue codes
+- [x] `employee` as the first extensible entity: `@wis/people` services (fields + employees), permissions via better-auth (dynamic roles honoured), audit without values
+- [x] Employee ↔ login linking; billable headcount counted once per person; `enforce_seat_limit()` now counts billable people (per preset); race-free also for employees
+- [x] `usage_snapshots` + `snapshotUsage` (daily counts per category)
+- [x] UI (en/de): employees list/create/edit generated from the tenant's fields, login panel, custom fields admin; browser flow F in `@wis/e2e`
+- [ ] Per-role form layouts (today: sensitive vs. not, sections and order)
+- [ ] Expression indexes for frequently filtered custom fields
+- [ ] Employee erasure/anonymisation (GDPR) as a platform operation; no delete for tenant code today
+- [ ] Run `snapshotUsage` daily (scheduled job, step 5 job infrastructure)
+- [ ] Invite an employee to get a login from the employee record; CSV import of employees
 
 ### 5. Public API v1 skeleton
 
@@ -94,4 +103,4 @@ Step 4 – custom fields engine, with `employee` as the first extensible entity 
 
 ## Decisions
 
-See [adr/](adr/): 0001 RLS multi-tenancy · 0002 Environments and Neon branches · 0003 Auth with better-auth · 0004 Tenant controls in the database · 0005 Resend for e-mail · 0006 UI foundation and invite-only accounts · 0007 Module system and platform area.
+See [adr/](adr/): 0001 RLS multi-tenancy · 0002 Environments and Neon branches · 0003 Auth with better-auth · 0004 Tenant controls in the database · 0005 Resend for e-mail · 0006 UI foundation and invite-only accounts · 0007 Module system and platform area · 0008 Custom fields, employees and billable headcount.

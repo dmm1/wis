@@ -4,7 +4,7 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { z } from 'zod';
 import { billingConfigSchema } from '@wis/core';
 import { schema } from '@wis/db';
-import { writeAudit } from './audit';
+import { writeAudit } from '@wis/db';
 import { TenantError, TenantErrorCode, toTenantError } from './errors';
 import type { Mailer } from './mailer';
 import { CREATOR_ROLE } from './permissions';

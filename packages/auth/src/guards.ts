@@ -1,8 +1,9 @@
-import { and, count, eq, gt, sql } from 'drizzle-orm';
+import { and, count, eq, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { schema } from '@wis/db';
 import { TenantError, TenantErrorCode } from './errors';
 import { CREATOR_ROLE } from './permissions';
+import { getBillingUsage, invitationTakesSeat } from './usage';
 
 type Db = NodePgDatabase<typeof schema>;
 
@@ -19,21 +20,10 @@ export async function assertSeatAvailable(db: Db, tenantId: string): Promise<voi
   if (ent.status === 'suspended' || ent.status === 'offboarding') {
     throw new TenantError(TenantErrorCode.TENANT_NOT_ACTIVE);
   }
-  const [{ n: members } = { n: 0 }] = await db
-    .select({ n: count() })
-    .from(schema.member)
-    .where(eq(schema.member.organizationId, tenantId));
-  const [{ n: pending } = { n: 0 }] = await db
-    .select({ n: count() })
-    .from(schema.invitation)
-    .where(
-      and(
-        eq(schema.invitation.organizationId, tenantId),
-        eq(schema.invitation.status, 'pending'),
-        gt(schema.invitation.expiresAt, new Date()),
-      ),
-    );
-  if (members + pending >= ent.max) throw new TenantError(TenantErrorCode.SEAT_LIMIT_REACHED);
+  const usage = await getBillingUsage(db, tenantId);
+  if (invitationTakesSeat(usage.preset) && usage.billable >= ent.max) {
+    throw new TenantError(TenantErrorCode.SEAT_LIMIT_REACHED);
+  }
 }
 
 const hasRole = (roles: string | null | undefined, role: string) =>

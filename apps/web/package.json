@@ -19,6 +19,7 @@
     "@wis/core": "workspace:*",
     "@wis/db": "workspace:*",
     "@wis/modules": "workspace:*",
+    "@wis/people": "workspace:*",
     "better-auth": "^1.7.17",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.4",

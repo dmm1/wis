@@ -1,7 +1,8 @@
-import { and, count, eq, gt } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { schema } from '@wis/db';
 import { TenantError, TenantErrorCode } from './errors';
+import { getBillingUsage } from './usage';
 
 type Db = NodePgDatabase<typeof schema>;
 type TenantStatus = (typeof schema.tenantStatus.enumValues)[number];
@@ -31,26 +32,19 @@ export async function getTenantOverview(db: Db, tenantId: string): Promise<Tenan
     .where(eq(schema.tenantEntitlements.tenantId, tenantId));
   if (!ent) return null;
 
-  const [{ n: seatsUsed } = { n: 0 }] = await db
-    .select({ n: count() })
-    .from(schema.member)
-    .where(eq(schema.member.organizationId, tenantId));
-  const [{ n: seatsReserved } = { n: 0 }] = await db
-    .select({ n: count() })
-    .from(schema.invitation)
-    .where(
-      and(
-        eq(schema.invitation.organizationId, tenantId),
-        eq(schema.invitation.status, 'pending'),
-        gt(schema.invitation.expiresAt, new Date()),
-      ),
-    );
+  const usage = await getBillingUsage(db, tenantId);
   const modules = await db
     .select({ id: schema.tenantModules.moduleId })
     .from(schema.tenantModules)
     .where(eq(schema.tenantModules.tenantId, tenantId));
 
-  return { tenantId, ...ent, seatsUsed, seatsReserved, modules: modules.map((m) => m.id) };
+  return {
+    tenantId,
+    ...ent,
+    seatsUsed: usage.inUse,
+    seatsReserved: usage.reserved,
+    modules: modules.map((m) => m.id),
+  };
 }
 
 /**

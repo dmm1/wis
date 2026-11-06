@@ -70,6 +70,8 @@ Each module exports a manifest: `id`, permissions, nav entries, routes, migratio
 
 ## 6. Per-tenant customization
 
+> Implemented in step 4: see [ADR-0008](adr/0008-custom-fields-and-employees.md). Differences from the sketch below: no per-role `form_layouts` yet (sections, order and a `sensitive` flag instead); definitions are archived, never deleted.
+
 - Typed core columns + `custom_data jsonb` on extensible entities.
 - `field_definitions` (tenant, entity, key, type, validation, i18n labels, role visibility), `form_layouts` (tenant, entity, role).
 - Validation via Zod generated from definitions; GIN/expression indexes for filtered fields.

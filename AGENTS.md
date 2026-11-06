@@ -17,15 +17,18 @@ pnpm lint | typecheck | test | build
 pnpm format                       # Prettier (CI runs format:check)
 pnpm --filter @wis/db migrate     # apply DB migrations (direct Neon endpoint)
 pnpm --filter @wis/db db:generate # generate a migration from schema changes
+pnpm build && pnpm --filter @wis/e2e e2e # browser tests of the built app (dev DB only; see packages/e2e/README.md)
 ```
 
-Run `pnpm lint && pnpm typecheck && pnpm test` before declaring work done. Node 24, pnpm 12.
+Run `pnpm lint && pnpm typecheck && pnpm test` before declaring work done; for UI or auth changes also run the e2e suite and add flows for new screens. Node 24, pnpm 12.
 
 ## Layout
 
 - `apps/web` – Next.js (App Router) UI + PWA. i18n via next-intl (`en` default, `de`).
 - `packages/core` – module manifest (`defineModule`), shared primitives.
 - `packages/db` – Drizzle, migrations, `withTenant()` (RLS context), generated auth schema.
+- `packages/people` – employees and the custom-fields services (tenant data via `withTenant`).
+- `packages/e2e` – browser tests of the built app (see its README).
 - `packages/auth` – better-auth config (`createAuth`), roles/permissions, mailer interface.
 - `packages/modules/registry` (`@wis/modules`) – the modules compiled into this deployment; `packages/modules/<name>` – feature modules. `packages/connectors/*` – integrations.
 - Platform area: `apps/web/src/app/[locale]/(app)/platform` (platform admins only).
@@ -39,7 +42,7 @@ Run `pnpm lint && pnpm typecheck && pnpm test` before declaring work done. Node 
 5. **Auth tables are owner-only.** Only `packages/auth` touches them; tenant code never gets a grant. `createAuth` requires a real `Mailer` in production (Resend, ADR-0005).
 6. **Security:** validate all input with Zod; check permissions in services (RLS is the second line of defence); never log secrets or personal data; audit-log mutating actions.
 7. **Migrations are forward-only and committed.** Never edit an applied migration; add a new one. Tests that touch the DB use throwaway schemas and clean up.
-8. **Seat/billing:** one billable person per human (see architecture §4.3). Never double count. The seat limit is enforced by the DB trigger `enforce_seat_limit()` (ADR-0004): when employees are added, update that function instead of adding app-only checks.
+8. **Seat/billing:** one billable person per human (see architecture §4.3). Never double count. The seat limit is enforced by the DB trigger `enforce_seat_limit()` over `tenant_billable_count()` (ADR-0004, ADR-0008). Change billing rules in those SQL functions (new migration); screens use `getBillingUsage()` so they match enforcement.
    The audit log is append-only; write via `writeAudit()`, inside the same transaction as the change when possible. Domain errors use stable codes (`TenantErrorCode`).
 9. **Track progress.** Update [docs/roadmap.md](docs/roadmap.md) in the same change: tick finished items, add newly discovered tasks, move "Now". Report status from that file, not from memory.
 10. **Docs are part of the change.** Update docs in the same change; record significant decisions as an ADR (`docs/adr/NNNN-title.md`, copy `0000-template.md`).
@@ -50,7 +53,8 @@ Run `pnpm lint && pnpm typecheck && pnpm test` before declaring work done. Node 
 2. Register it in `packages/modules/registry/src/index.ts`.
 3. Messages: add a top-level namespace named after the module id (`nav.title`, …) to both `en.json` and `de.json`, plus `Home.modules.<id>` (display name).
 4. Pages under `apps/web/src/app/[locale]/(app)/<path>`: wrap in `TenantGate`, call `isModuleEnabled(ctx.tenant, '<id>')` → `notFound()`. APIs: `assertModuleEnabled()`.
-5. Tenant tables follow hard rule 1 (RLS + grant). Update the roadmap and add tests (permissions come for free from the manifest).
+5. Entities that should accept custom fields: list them in `extensibleEntities`, add a `custom_data jsonb` column, and reuse `buildCustomDataSchema` / `visibleCustomData` (never read or write `custom_data` without them). See ADR-0008.
+6. Tenant tables follow hard rule 1 (RLS + grant). Update the roadmap and add tests (permissions come for free from the manifest).
 
 ## UI conventions (ADR-0006)
 

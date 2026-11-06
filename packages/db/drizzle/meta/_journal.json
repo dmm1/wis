@@ -43,6 +43,41 @@
       "when": 1793915636200,
       "tag": "0005_tenancy_rls_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793920592272,
+      "tag": "0006_user_last_workspace",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793921185098,
+      "tag": "0007_people_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793921207193,
+      "tag": "0008_people_rls_billing",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793921251707,
+      "tag": "0009_seat_limit_tenant_lookup",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793921303748,
+      "tag": "0010_billing_counts_reserved",
+      "breakpoints": true
     }
   ]
 }

@@ -1,13 +1,15 @@
 import 'server-only';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { consoleMailer, createAuth, createResendMailer, type Auth, type Mailer } from '@wis/auth';
-import { createPool, schema } from '@wis/db';
+import { createDb, createPool, schema, type Db } from '@wis/db';
 import { serverEnv } from './env';
 
 interface AuthContext {
   auth: Auth;
   /** Owner connection for auth-layer reads (auth tables are not tenant-scoped). */
   db: NodePgDatabase<typeof schema>;
+  /** Tenant-scoped access: always use through withTenant() (runs as the restricted wis_app role). */
+  appDb: Db;
   mailer: Mailer;
   baseURL: string;
 }
@@ -17,7 +19,8 @@ const globalForAuth = globalThis as unknown as { __wisAuth?: AuthContext };
 
 function build(): AuthContext {
   const env = serverEnv();
-  const db = drizzle(createPool(env.DATABASE_URL, 10), { schema });
+  const pool = createPool(env.DATABASE_URL, 10);
+  const db = drizzle(pool, { schema });
   // Resend when configured (required in production). MAIL_TRANSPORT=console forces the console
   // mailer, e.g. for end-to-end tests that must never send real e-mail.
   const mailer =
@@ -33,7 +36,13 @@ function build(): AuthContext {
     production: env.APP_ENV === 'production' && env.MAIL_TRANSPORT !== 'console',
     restrictSignUp: true, // accounts only come from invitations or the platform admin
   });
-  return { auth, db, mailer: mailer ?? consoleMailer, baseURL: env.BETTER_AUTH_URL };
+  return {
+    auth,
+    db,
+    appDb: createDb(pool),
+    mailer: mailer ?? consoleMailer,
+    baseURL: env.BETTER_AUTH_URL,
+  };
 }
 
 export function getAuthContext(): AuthContext {

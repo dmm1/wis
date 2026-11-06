@@ -4,8 +4,8 @@ export { ac, statements, tenantRoles, tenantRoleNames, CREATOR_ROLE } from './pe
 export type { TenantRoleName } from './permissions';
 export { consoleMailer, createResendMailer } from './mailer';
 export type { Mailer, MailMessage, ResendMailerOptions } from './mailer';
-export { writeAudit } from './audit';
-export type { AuditEntry } from './audit';
+export { writeAudit } from '@wis/db';
+export type { AuditEntry } from '@wis/db';
 export { TenantError, TenantErrorCode, toTenantError } from './errors';
 export {
   provisionTenant,
@@ -39,3 +39,6 @@ export {
 } from './platform-admin';
 export type { TenantListItem } from './platform-admin';
 export { registry } from '@wis/modules';
+export { getBillingUsage, invitationTakesSeat, snapshotUsage } from './usage';
+export type { BillingUsage } from './usage';
+export { getEmployeeLogin, linkEmployeeToUser, listLinkableMembers } from './employee-link';
