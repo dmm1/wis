@@ -4,7 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { runFlows } from './flows';
 import { cleanup, seed } from './seed';
 
-const baseURL = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
+// The browser runs inside this container, so the suite always uses localhost, even when your own
+// .env.local points BETTER_AUTH_URL at a forwarded address (Codespaces).
+const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+process.env.BETTER_AUTH_URL = baseURL;
+process.env.APP_URL = baseURL;
 const port = new URL(baseURL).port || '3000';
 const webDir = fileURLToPath(new URL('../../../apps/web', import.meta.url));
 const artifacts = fileURLToPath(new URL('../artifacts', import.meta.url));

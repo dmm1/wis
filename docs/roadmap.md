@@ -1,12 +1,19 @@
 # Roadmap & progress
 
-Single place to see where WIS stands. **Updated in the same change as the work** (see AGENTS.md). Last updated: 2026-11-05 (steps 1–4 done).
+Single place to see where WIS stands. **Updated in the same change as the work** (see AGENTS.md). Last updated: 2026-11-06 (steps 1–4 done; step 5 planned).
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 
 ## Now
 
-Step 5 – public API v1: API keys / OAuth2 client credentials, OpenAPI, webhooks via outbox, `external_refs` (see [architecture §7](architecture.md)).
+**Step 5 – public API v1**, after the short checklist below. Plan with the agreed defaults is under [step 5](#5-public-api-v1-skeleton).
+
+### Before starting step 5 (owner: you)
+
+- [ ] Commit the current state (steps 1–4, e2e package, docs). Agents never commit.
+- [ ] Replace the Resend key with a **sending-only** key (current one has full access); update `RESEND_API_KEY` in `.env.local`.
+- [ ] Rotate the Neon `development` role password: it was printed in an earlier session's output (development branch only; production was never exposed). Neon console → Roles → reset password, then update both URLs in `.env.local`.
+- [ ] Decide where the background worker will run in production (see open questions); not needed to start building.
 
 ## Foundation
 
@@ -44,10 +51,10 @@ Step 5 – public API v1: API keys / OAuth2 client credentials, OpenAPI, webhook
 - [ ] Run `@wis/e2e` in CI (needs a Neon branch per run, secrets, Chromium)
 - [ ] Enforce 2FA/passkey for customer-admins and platform admins (today: banner only)
 - [ ] Use a Resend sending-only API key (current key has full access)
-- [ ] Platform admin API/UI for provisioning, seats, status (step 3)
+- [x] Platform admin UI for provisioning, seats, status (step 3)
 - [ ] Location scope for role assignments (when locations exist in work-schedule); role-management UI
 - [x] Billing category counts and `enforce_seat_limit()` over billable people (step 4)
-- [ ] Resend account: verify sending domain (EU region), set `RESEND_API_KEY` / `MAIL_FROM` (manual)
+- [x] Resend: sending domain verified (EU region), key and sender configured
 - [ ] Retention/purge job for audit log (GDPR)
 
 ### 3. Module registry + entitlements + platform admin UI — done
@@ -75,12 +82,26 @@ Step 5 – public API v1: API keys / OAuth2 client credentials, OpenAPI, webhook
 - [ ] Run `snapshotUsage` daily (scheduled job, step 5 job infrastructure)
 - [ ] Invite an employee to get a login from the employee record; CSV import of employees
 
-### 5. Public API v1 skeleton
+### 5. Public API v1 skeleton — next
 
-- [ ] API keys / OAuth2 client credentials, scopes = module permissions
-- [ ] OpenAPI generated from Zod, idempotency keys, cursor pagination
-- [ ] Transactional outbox + signed webhooks with delivery log
-- [ ] `external_refs`
+Agreed defaults (change only if you say so):
+
+- **Mounting:** Hono inside the existing Next app under `/api/v1`, OpenAPI 3.1 generated from the same Zod schemas the services use. One deployable for the API; a separate worker process for background jobs.
+- **Auth:** tenant-scoped **API keys first** (better-auth `api-key` plugin or own table; hashed, prefix shown, expiry, rotation, last-used audit). Scopes = module permissions, mapped onto `Actor.can()` so the existing `@wis/people` services work unchanged for API callers. **OAuth2 client credentials later**, when a real integration needs it.
+- **Conventions:** `Idempotency-Key` on writes, cursor pagination, `updated_since`, ETag/`If-Match`, RFC 9457 problem+json errors, UUIDv7 ids, per-key rate limits, contract tests in CI.
+- **First resources:** employees (+ custom fields) and field definitions (read). Modules add theirs through their manifest.
+- **Webhooks:** transactional outbox → signed (HMAC) delivery with retries, delivery log, manual replay, per-tenant subscriptions. First events: `employee.created`, `employee.updated`, `employee.login_linked`, `field.created/updated/archived`. Schedule events come with the work-schedule module.
+- **Worker (`apps/worker`):** pg-boss on the **direct** (unpooled) Neon connection. First jobs: webhook delivery, daily `snapshotUsage`, audit-log retention purge.
+- **`external_refs`:** (tenant, entity_type, entity_id, system, external_id, synced_at), exposed through the API.
+
+Steps:
+
+- [ ] 5a API keys + `/api/v1` skeleton (auth, scopes, errors, rate limit, OpenAPI endpoint) + employees read/write
+- [ ] 5b Idempotency keys, cursor pagination, `updated_since`, ETags
+- [ ] 5c Outbox + webhook subscriptions, signing, delivery log, replay UI/API
+- [ ] 5d `apps/worker` with pg-boss; jobs: webhook delivery, `snapshotUsage` daily, audit retention
+- [ ] 5e `external_refs`
+- [ ] 5f ADR, docs (public API guide), e2e flow for API keys + a webhook receiver
 
 ### 6. Module: work-schedule
 
@@ -94,9 +115,48 @@ Step 5 – public API v1: API keys / OAuth2 client credentials, OpenAPI, webhook
 - Production hosting, backups/restore drill, monitoring
 - WIS's own subscription billing (consumes usage snapshots)
 
+## Known gaps and before go-live
+
+Grouped so nothing is forgotten. Items in the step sections above are the same items; this is the checklist view.
+
+### Security
+
+- [ ] Enforce 2FA or a passkey for customer admins and platform admins (today: banner only). API keys raise the stakes.
+- [ ] Platform admin: sign-in / impersonation audit view, hard 2FA
+- [ ] Restrict service-worker caching before authenticated data is cached (never cache API or personal responses)
+- [ ] Resend sending-only key; rotate the Neon development password (see checklist above)
+- [ ] Security review before first customer (CSP review, dependency audit, secret scanning in CI)
+
+### Operations
+
+- [ ] Mark Neon `production` branch as protected (console, manual)
+- [ ] Production hosting for web and worker; secrets management; EU region
+- [ ] Backups and a restore drill (Neon history is 6 h today: check plan limits)
+- [ ] Monitoring, error tracking and alerting
+- [ ] Run `@wis/e2e` in CI (needs a Neon branch per run, secrets, Chromium)
+- [ ] Customers' e-mail deliverability: SPF/DKIM/DMARC checked for `MAIL_FROM` domain
+
+### Privacy (GDPR / DSGVO)
+
+- [ ] Employee erasure/anonymisation (platform operation; tenant code cannot delete)
+- [ ] Audit-log retention purge job (documented switch `wis.audit_purge`)
+- [ ] Data export per tenant (offboarding)
+- [ ] Sub-processor list and DPAs: Neon, Resend, hosting provider
+- [ ] Privacy policy and imprint pages (DE/EN)
+
+### Product
+
+- [ ] Real PWA icons and branding (placeholder icons today)
+- [ ] Per-role form layouts; expression indexes for hot custom fields
+- [ ] Platform: edit billing config (preset, prices) per customer; usage overview from `usage_snapshots`
+- [ ] Location scope for role assignments; role-management UI
+- [ ] Invite an employee to get a login from the employee record; CSV import of employees
+- [ ] German copy: pick one inclusive style (UI currently mixes "Mitarbeiter" and "Mitarbeiter:in")
+- [ ] Multi-workspace users: last-used workspace is remembered, but there is no "default workspace" setting
+
 ## Open questions
 
-- Production app hosting target (Neon DB is decided).
+- Production hosting for the web app **and the worker** (Neon DB is decided). The worker needs a long-running process (pg-boss uses the direct connection), so purely serverless hosting does not fit it.
 - First concrete integrations customers will ask for.
 - Work-schedule rules engine scope for v1.
 - Mark Neon `production` branch as protected (manual, in console).

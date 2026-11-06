@@ -19,6 +19,17 @@ pnpm --filter @wis/auth create-platform-admin you@example.com "Your Name"
 
 Then sign in, and add a passkey and 2FA under Security.
 
+## GitHub Codespaces and other proxies
+
+Server Actions, sign-in and passkeys all check that the browser's address matches the app's configured URL. Open the app in one of two ways:
+
+- **`http://localhost:3000`**: use the Ports panel's local forwarding and keep `APP_URL` / `BETTER_AUTH_URL` at `http://localhost:3000`.
+- **The forwarded URL** (`https://<codespace-name>-3000.app.github.dev`): set both `APP_URL` and `BETTER_AUTH_URL` to exactly that address and restart `pnpm dev`. The app then allows it for Server Actions (`next.config.ts` derives the allowed host from `BETTER_AUTH_URL`), accepts it as a trusted auth origin, and uses its host for passkeys.
+
+In production builds the allowed host is fixed at **build time**, so set `BETTER_AUTH_URL` (and `ALLOWED_ORIGINS` if needed) when running `next build`.
+
+If you see "Invalid Server Actions request", the address in the browser and `BETTER_AUTH_URL` differ. The browser tests (`@wis/e2e`) always use `http://localhost:3000` regardless of your `.env.local`.
+
 ## E-mail
 
 Without `RESEND_API_KEY`, e-mails (invitations, verification, reset) are printed to the dev server console. To send real mail: verify a domain in Resend (EU region), create a sending-only API key, set `RESEND_API_KEY` and `MAIL_FROM` in `.env`. See ADR-0005.

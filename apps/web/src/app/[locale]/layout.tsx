@@ -34,7 +34,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className={`${display.variable} ${sans.variable}`}>
+    // suppressHydrationWarning: browser extensions (e.g. analytics opt-out) add attributes to <html>
+    // before React loads; this silences that one element only, not the rest of the tree.
+    <html lang={locale} className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
       <body>
         <SerwistProvider swUrl="/serwist/sw.js" disable={process.env.NODE_ENV === 'development'}>
           <NextIntlClientProvider>{children}</NextIntlClientProvider>

@@ -16,6 +16,20 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      // Next.js rejects Server Actions whose Origin differs from the host it sees (CSRF protection).
+      // Behind a proxy or Codespaces port forwarding that happens for the public address, so the app's
+      // own public URL (BETTER_AUTH_URL) is allowed, plus any extra hosts in ALLOWED_ORIGINS.
+      allowedOrigins: [
+        new URL(process.env.BETTER_AUTH_URL ?? 'http://localhost:3000').host,
+        ...(process.env.ALLOWED_ORIGINS ?? '')
+          .split(',')
+          .map((o) => o.trim())
+          .filter(Boolean),
+      ],
+    },
+  },
   transpilePackages: ['@wis/core', '@wis/auth', '@wis/db'],
   async headers() {
     return [
